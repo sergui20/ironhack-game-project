@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ironhack Project Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="styles/index.css">
+</head>
+<body>
+    <div class="start-game">
+        <div class="buttons-container">
+            <button id="1player" onclick="canvas.render1PlayerScreen()" class="btn players-number">1 Player</button>
+            <button id="2player" onclick="canvas.render2PlayersScreen()" class="btn players-number">2 Player</button>
+        </div>
+        <button class="btn add-button">Remove adds for $100</button>
+    </div>
+
+    <div id="1player-screen" class="hide">
+        <div class="player1-area">
+            <button id="singleplayer-ready" onclick="game.singlePlayer()" class="btn-ready">Play</button>
+            <a id="arrow-left" class="arrows"><i class="fas fa-chevron-left"></i></a>
+            <a id="arrow-right" class="arrows"><i class="fas fa-chevron-right"></i></a>
+        </div>
+    </div>
+
+    <div id="2players-screen" class="hide">
+        <div class="player1-area">
+            <button id="player1-ready" class="btn-ready">Ready</button>
+            <a id="arrow-left" class="arrows"><i class="fas fa-chevron-left"></i></a>
+            <a id="arrow-right" class="arrows"><i class="fas fa-chevron-right"></i></a>
+        </div>
+
+        <div class="player2-area">
+            <a id="arrow-left" class="arrows"><i class="fas fa-chevron-left"></i></a>
+            <a id="arrow-right" class="arrows"><i class="fas fa-chevron-right"></i></a>
+            <button id="player2-ready"class="btn-ready">Ready</button>
+        </div>
+    </div>
+
+    <!-- <div class="play-screen">
+        <div class="player1-area">
+            
+        </div>
+
+        <div class="player2-area">
+            
+        </div>
+    </div> -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="src/models/canvas.js"></script>
+    <script src="src/models/players.js"></script>
+    <script src="src/models/game.js"></script>
+    <script src="src/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+body{
+    margin: 0;
+    overflow: hidden;
+}
+
+canvas {
+    margin: 0;
+    padding: 0;
+    border: 1px solid black;
+}
+
+div.start-game {
+    width: 400px;
+    height: 142px;
+    position: absolute;
+    top: 50%;
+    margin-top: -71px;
+    left: 50%;
+    margin-left: -200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+div.buttons-container {
+    display: flex;
+    flex-direction: column;
+    height: 80px;
+    justify-content: space-between;
+}
+
+.btn {
+    font-size: 15px;
+    font-weight: 700;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    padding: 5px 10px;
+    line-height: 0;
+}
+
+.players-number {
+    background-color: #41f473;
+}
+
+.add-button {
+    background-color: #f4c741;
+}
+
+div.player1-area {
+    position: absolute;
+    top: 0;
+    width: 642px;
+    height: 100%;
+}
+
+div.player2-area {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 656px;
+}
+
+button.btn-ready {
+    border: 1px solid white;
+    background-color: #41f473;
+    color: white;
+    padding: 10px 125px;
+    border-radius: 15px;
+    font-weight: 800;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 10px;
+    left: 50%;
+    margin-left: -142px;
+}
+
+
+a.arrows {
+    color: #41f473;
+    font-size: 50px;
+}
+
+a#arrow-left {
+    position: absolute;
+    top: 50%;
+    margin-top: -29px;
+}
+
+a#arrow-right {
+    position: absolute;
+    left: 95%;
+    top: 50%;
+    margin-top: -29px;
+}
