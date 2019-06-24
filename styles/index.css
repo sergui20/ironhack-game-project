@@ -73,6 +73,7 @@ button.btn-ready {
     margin-bottom: 10px;
     left: 50%;
     margin-left: -142px;
+    cursor: pointer;
 }
 
 

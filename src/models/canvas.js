@@ -5,6 +5,8 @@ class Canvas {
         this.canvas.height = 655;
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.ctx = this.canvas.getContext("2d");
+        this.rightHandCoords = {x: 716, y: 510};
+        this.leftHandCoords = {x: 650, y: 160}
         this.leftObstacleCoords = {x: 450, y: 310};
         this.rightObstacleCoords = {x: 914, y: 310};
     }
@@ -72,36 +74,28 @@ class Canvas {
         this.drawRightTarget();
     }
 
-    drawLeftTarget(move) {
-        let x = move || 0;
-        let translateX = 450 + x;
-        this.leftObstacleCoords.x = translateX;
+    drawLeftTarget() {
+        this.ctx.save();      
 
-        this.ctx.save();
-
-        this.ctx.translate(translateX, 310);
+        this.ctx.translate(this.leftObstacleCoords.x, 310);
 
         this.ctx.beginPath();
         this.ctx.rect(0, 0, 40, 40);
-        this.ctx.fillStyle = 'red';
+        this.ctx.fillStyle = 'transparent';
         this.ctx.fill();
         this.ctx.closePath();
 
         this.ctx.restore();
     }
 
-    drawRightTarget(move) {
-        let x = move || 0;
-        let translateX = 914 - x;
-        this.rightObstacleCoords.x = translateX;
-
+    drawRightTarget() {
         this.ctx.save();
 
-        this.ctx.translate(translateX, 310);
+        this.ctx.translate(this.rightObstacleCoords.x, 310);
 
         this.ctx.beginPath();
         this.ctx.rect(0, 0, -40, 40);
-        this.ctx.fillStyle = 'red';
+        this.ctx.fillStyle = 'transparent';
         this.ctx.fill();
         this.ctx.closePath();
 
@@ -113,90 +107,172 @@ class Canvas {
         this.moveRightHand();
     }
 
-    moveLeftHand(move) {
-        let x = move || 0;
-
+    moveLeftHand() {
         this.ctx.save();
         
-        this.ctx.translate(650 + x, 160);
-        this.ctx.rotate(Math.PI / 2)
+        this.ctx.translate(this.leftHandCoords.x, 160);
+        this.ctx.rotate(Math.PI / 2);
         this.ctx.drawImage(loadedImages[0], 0, 0);
         
         this.ctx.restore();
-        this.drawLeftTarget(x);
+
+        // move the target
+        this.drawLeftTarget();
     }
 
-    moveRightHand(move) {
-        let x = move || 0;
-
+    moveRightHand() {
         this.ctx.save();
 
-        this.ctx.translate(716 - x, 510);// half (red part)
+        this.ctx.translate(this.rightHandCoords.x, 510);// half (red part)
         this.ctx.rotate(-Math.PI / 2)
         this.ctx.drawImage(loadedImages[0], 0, 0);
 
         this.ctx.restore();
-        this.drawRightTarget(x)
+
+        this.drawRightTarget()
     }
 
-    stretchLeftHand() {
+    stretchLeftHand(rightRetreat) {
         let i = 0;
         setInterval(() => {
-            if(i === 480) return
+            if(i === 110) return
+            this.leftHandCoords.x += i;
+            this.leftObstacleCoords.x += i;
 
             this.clearCanvas();
             this.drawTemplate();
-            this.moveRightHand();
-            this.moveLeftHand(i)
+            if(rightRetreat) {
+                this.rightHandCoords.x += i
+                this.moveRightHand();
+            } else {
+                this.moveRightHand();
+            }
+            this.moveLeftHand();
             this.checkCollision();
             i += 10
-        }, 1)
+        }, 40)
     }
 
-    stretchRightHand() {
+    stretchRightHand(leftRetreat) {
         let i = 0;
         setInterval(() => {
-            if(i === 480) return
+            if(i === 110) return;
+            this.rightHandCoords.x -= i;
+            this.rightObstacleCoords.x -= i;
 
             this.clearCanvas();
             this.drawTemplate();
-            this.moveLeftHand()
+
+            if(leftRetreat) {
+                this.leftHandCoords.x -= i;
+                this.moveLeftHand();
+            } else {
+                this.moveLeftHand();
+            }
+
             this.moveRightHand(i);
             this.checkCollision();
             i += 10
-        }, 1)
+        }, 40)
     }
 
     retreatLeftHand() {
         let i = 0;
         setInterval(() => {
-            if(i === 480) return
+            if(i === 100) return;
+            this.leftHandCoords.x -= i;
+            this.leftObstacleCoords.x -= i;
 
             this.clearCanvas();
             this.drawTemplate();
             this.moveRightHand();
-            this.moveLeftHand(-i)
+            this.moveLeftHand();
             this.checkCollision();
             i += 10
-        }, 1)
+        }, 40)
     }
 
     retreatRightHand() {
         let i = 0;
         setInterval(() => {
-            if(i === 480) return
+            if(i === 100) return
+            this.rightHandCoords.x += i;
+            this.rightObstacleCoords.x += i;
 
             this.clearCanvas();
             this.drawTemplate();
             this.moveLeftHand()
-            this.moveRightHand(-i);
+            this.moveRightHand();
             this.checkCollision();
             i += 10
-        }, 1)
+        }, 40)
+    }
+
+    restoreRightRetreat() {
+        let i = 90;
+        setInterval(() => {
+            if(i === 0) return
+            this.rightHandCoords.x -= i;
+            this.rightObstacleCoords.x -= i;
+
+            this.clearCanvas();
+            this.drawTemplate();
+            this.moveLeftHand()
+            this.moveRightHand();
+            this.checkCollision();
+            i -= 10
+        }, 40)
+    }
+
+    restoreLeftRetreat() {
+        let i = 90  
+        setInterval(() => {
+            if(i === 0) return
+            this.leftHandCoords.x += i;
+            this.leftObstacleCoords.x += i;
+
+            this.clearCanvas();
+            this.drawTemplate();
+            this.moveLeftHand()
+            this.moveRightHand();
+            this.checkCollision();
+            i -= 10
+        }, 40)
+    }
+
+    restoreLeftStretch() {
+        let i = 100;
+        setInterval(() => {
+            if(i === 0) return
+            this.leftHandCoords.x -= i;
+            this.leftObstacleCoords.x -= i;
+
+            this.clearCanvas();
+            this.drawTemplate();
+            this.moveLeftHand()
+            this.moveRightHand();
+            this.checkCollision();
+            i -= 10
+        }, 40)
+    }
+
+    restoreRightStretch() {
+        let i = 100
+        setInterval(() => {
+            if(i === 0) return
+            this.rightHandCoords.x += i;
+            this.rightObstacleCoords.x += i;
+
+            this.clearCanvas();
+            this.drawTemplate();
+            this.moveLeftHand()
+            this.moveRightHand();
+            this.checkCollision();
+            i -= 10
+        }, 40)
     }
 
     checkCollision() {
-        // console.log(this.leftObstacleCoords.x)
         if(this.leftObstacleCoords.x >= this.rightObstacleCoords.x) {
             console.log("Collideeee")
         }

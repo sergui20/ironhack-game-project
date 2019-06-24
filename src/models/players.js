@@ -3,5 +3,6 @@ class Player {
         this.name = name;
         this.lives = 10;
         this.ready = false;
+        this.attack =  false;
     }
 }
