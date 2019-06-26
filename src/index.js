@@ -6,6 +6,8 @@ var hands = [
     }
 ]
 
+const slapEffect = new Audio('src/slap.mp3');
+
 const canvas = new Canvas();
 const game = new Game(hands)
 
@@ -25,37 +27,55 @@ $("#singleplayer-ready").click(function() {
     game.singlePlayer();
 
     document.addEventListener("keyup", function(ev) {
-        if(ev.keyCode === 32) {
-            game.player1Attack()
+        if(ev.keyCode === 32 && canvas.leftHandCoords.x === 620 && canvas.toggleEvent) {
+            if (game.players["Player1"].attack) {
+                game.player1Attack();
+            } else {
+                game.player1Retreat();
+            }
         }
     })
 });
 
 $("#player1-ready").click(function() {
     game.multiPlayer("Player1");
-    console.log($("#player1-ready"))
-    $("#player1-ready").addClass("disable");
+    $(this).addClass("disabled");
 
     document.addEventListener("keyup", function(ev) {
-        if(ev.keyCode === 65) {
-            canvas.stretchLeftHand()
-            setTimeout(() => {
-                canvas.restoreLeftStretch()
-            }, 500)
+        if(ev.keyCode === 65 && canvas.leftHandCoords.x === 620 && canvas.toggleEvent) {
+            if(game.players["Player1"].attack) { // toggle player 1 attack
+                canvas.stretchLeftHand()
+                setTimeout(() => {
+                    canvas.restoreLeftStretch()
+                }, 500)
+            } else {
+                canvas.retreatLeftHand()
+                setTimeout(() => {
+                    canvas.restoreLeftRetreat()
+                }, 500) 
+            }
         }
     })
 });
 
 $("#player2-ready").click(function() {
     game.multiPlayer("Player2");
-    // $("#player2-ready").addClass("disable");
+    $(this).addClass("disabled");
 
     document.addEventListener("keyup", function(ev) {
-        if(ev.keyCode === 76) {
-            canvas.retreatRightHand();
-            setTimeout(() => {
-                canvas.restoreRightRetreat();
-            }, 500)
+        console.log(canvas.toggleEvent)
+        if(ev.keyCode === 76 && canvas.rightHandCoords.x === 746 && canvas.toggleEvent) {
+            if(game.players["Player2"].attack) {
+                canvas.stretchRightHand();
+                setTimeout(() => {
+                    canvas.restoreRightStretch();
+                }, 500)
+            } else {
+                canvas.retreatRightHand();
+                setTimeout(() => {
+                    canvas.restoreRightRetreat();
+                }, 500)
+            }
         }
     })
 });

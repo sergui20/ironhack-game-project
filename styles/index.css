@@ -46,6 +46,10 @@ div.buttons-container {
     background-color: #f4c741;
 }
 
+.add-button:hover {
+    background-color: #f9a825;
+}
+
 div.player1-area {
     position: absolute;
     top: 0;
