@@ -11,11 +11,12 @@
 </head>
 <body>
     <div class="start-game">
+        <img src="src/images/title2.png">
         <div class="buttons-container">
             <button id="1player" onclick="canvas.render1PlayerScreen()" class="btn players-number">1 Player</button>
             <button id="2player" onclick="canvas.render2PlayersScreen()" class="btn players-number">2 Player</button>
         </div>
-        <button class="btn add-button">Remove adds for $100</button>
+        <a class="btn add-button modal-trigger" href="#modal1" onclick="removeAddsLoader()">Remove adds for $100</a>
     </div>
 
     <div id="1player-screen" class="hide">
@@ -40,15 +41,17 @@
         </div>
     </div>
 
-    <!-- <div class="play-screen">
-        <div class="player1-area">
-            
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <div class="loader"></div>
+            <h4 class="h4-loader hide">Thank you</h4>
         </div>
+    </div>
+    
+    <div class="hide rematch">
+        <a class="btn btn-rematch" href="index.html">Rematch</a>
+    </div>
 
-        <div class="player2-area">
-            
-        </div>
-    </div> -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="src/models/canvas.js"></script>

@@ -6,12 +6,21 @@ var hands = [
     }
 ]
 
+const sadFace = new Image();
+sadFace.src = "src/images/sad-face.png";
+
+const bracelet = new Image();
+bracelet.src = "src/images/bracelet.png";
+
 const slapEffect = new Audio('src/slap.mp3');
 
 const canvas = new Canvas();
 const game = new Game(hands)
 
 window.addEventListener("DOMContentLoaded", function() {
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems);
+
     game.hands.forEach(img => {
        let image = new Image();
        image.src = img.src
@@ -27,7 +36,7 @@ $("#singleplayer-ready").click(function() {
     game.singlePlayer();
 
     document.addEventListener("keyup", function(ev) {
-        if(ev.keyCode === 32 && canvas.leftHandCoords.x === 620 && canvas.toggleEvent) {
+        if(ev.keyCode === 32 && canvas.leftHandCoords.x === 620 && canvas.toggleEvent && (game.players["Player2"].lives > 0) && (!canvas.lockLeftHand)) {
             if (game.players["Player1"].attack) {
                 game.player1Attack();
             } else {
@@ -42,7 +51,7 @@ $("#player1-ready").click(function() {
     $(this).addClass("disabled");
 
     document.addEventListener("keyup", function(ev) {
-        if(ev.keyCode === 65 && canvas.leftHandCoords.x === 620 && canvas.toggleEvent) {
+        if(ev.keyCode === 65 && canvas.leftHandCoords.x === 620 && canvas.toggleEvent && (game.players["Player2"].lives > 0) && (!canvas.lockLeftHand)) {
             if(game.players["Player1"].attack) { // toggle player 1 attack
                 canvas.stretchLeftHand()
                 setTimeout(() => {
@@ -64,7 +73,7 @@ $("#player2-ready").click(function() {
 
     document.addEventListener("keyup", function(ev) {
         console.log(canvas.toggleEvent)
-        if(ev.keyCode === 76 && canvas.rightHandCoords.x === 746 && canvas.toggleEvent) {
+        if(ev.keyCode === 76 && canvas.rightHandCoords.x === 746 && canvas.toggleEvent && (game.players["Player1"].lives > 0) && (!canvas.lockRightHand)) {
             if(game.players["Player2"].attack) {
                 canvas.stretchRightHand();
                 setTimeout(() => {
@@ -79,3 +88,10 @@ $("#player2-ready").click(function() {
         }
     })
 });
+
+function removeAddsLoader() {
+    setTimeout(() => {
+        $(".loader").addClass("hide");
+        $(".h4-loader").removeClass("hide");
+    }, 3000)
+}

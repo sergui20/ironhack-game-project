@@ -5,10 +5,11 @@ class Game {
         this.players = {};
         this.playWithAI = false;
         this.twoPlayers = false;
+        this.retreats = 3;
     }
 
     initializeGame() {
-        canvas.drawTemplate();
+        canvas.rotateTemplate();
     }
 
     singlePlayer() {
@@ -45,7 +46,7 @@ class Game {
     player1Attack() {
         let retreatChance = Math.random();
 
-        if (retreatChance < 0.5) {
+        if (retreatChance < 0.45) {
             canvas.stretchLeftHand();
             canvas.retreatRightHand();
 
@@ -71,6 +72,8 @@ class Game {
 
     pcTurn() {
         setInterval(function () {
+            if(game.players["Player1"].lives === 0) return;
+
             if(game.players["Player2"].attack) {
                 let randomTime = Math.floor((Math.random() * 3))
                 if(randomTime === 2 && canvas.rightHandCoords.x === 746 && canvas.toggleEvent) {
@@ -83,5 +86,35 @@ class Game {
                 return
             }
         }, 2000)
+    }
+
+    checkIfLoose() {
+        if(this.players["Player1"].lives === 0) {
+            canvas.clearCanvas();
+            if(game.players["Player1"].attack) {
+                canvas.rotateTemplate()
+            } else {
+                canvas.drawTemplate();
+            }
+            // canvas.drawTemplate();
+            canvas.drawLeftSadFace();
+            canvas.drawWinnerText();
+            $(".rematch").removeClass("hide")
+            return;
+        }
+
+        if(this.players["Player2"].lives === 0) {
+            canvas.clearCanvas();
+            if(game.players["Player1"].attack) {
+                canvas.rotateTemplate()
+            } else {
+                canvas.drawTemplate();
+            }
+            // canvas.drawTemplate();
+            canvas.drawRightSadFace();
+            canvas.drawWinnerText();
+            $(".rematch").removeClass("hide")
+            return;
+        }
     }
 }

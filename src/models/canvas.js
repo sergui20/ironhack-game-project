@@ -17,6 +17,8 @@ class Canvas {
         }
         this.leftHandMoving = false;
         this.rightHandMoving = false;
+        this.lockLeftHand = false;
+        this.lockRightHand = false;
     }
 
     drawTemplate () {
@@ -33,6 +35,29 @@ class Canvas {
         this.ctx.fillStyle = '#8E182C';
         this.ctx.fill();
         this.ctx.closePath();
+    }
+
+    rotateTemplate () {
+        // this.ctx.rotate(-Math.PI)
+        this.ctx.save()
+        this.ctx.beginPath();
+        this.ctx.translate(1364 / 2 + 10, 0)
+        this.ctx.rect(0, 0, document.body.clientWidth, this.canvas.height);
+        // console.log(document.body.clientWidth / 2 - 10)
+        this.ctx.fillStyle = '#6259B2';
+        this.ctx.fill();
+        this.ctx.closePath();
+        this.ctx.restore();
+
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.translate(0, 0)
+        this.ctx.rect(0, 0, document.body.clientWidth / 2 - 10, this.canvas.height);
+        // console.log(-document.body.clientWidth / 2 + 10)
+        this.ctx.fillStyle = '#8E182C';
+        this.ctx.fill();
+        this.ctx.closePath();
+        this.ctx.restore();
     }
 
     clearCanvas() {
@@ -62,8 +87,9 @@ class Canvas {
         $("#1player-screen").addClass("hide");
         $("#2players-screen").addClass("hide");
         this.clearCanvas();
-        this.drawTemplate();
+        this.rotateTemplate();
         this.moveHands();
+        this.drawAttackText();
     }
 
     drawHands() {
@@ -89,7 +115,7 @@ class Canvas {
 
         this.ctx.beginPath();
         this.ctx.rect(0, 0, 40, 40);
-        this.ctx.fillStyle = 'red';
+        this.ctx.fillStyle = 'transparent';
         this.ctx.fill();
         this.ctx.closePath();
 
@@ -103,7 +129,7 @@ class Canvas {
 
         this.ctx.beginPath();
         this.ctx.rect(0, 0, -40, 40);
-        this.ctx.fillStyle = 'red';
+        this.ctx.fillStyle = 'transparent';
         this.ctx.fill();
         this.ctx.closePath();
 
@@ -127,8 +153,15 @@ class Canvas {
         this.ctx.restore();
 
         // move the target
+        this.drawRetreatCounter();
         this.drawLeftTarget();
         this.drawLeftHandLives();
+
+        if(this.lockLeftHand) {
+            this.checkLeftBracelet()
+        }
+
+        game.checkIfLoose();            
 
         if(this.leftHandCoords.x === 1070) {
             this.leftHandMoving = true;
@@ -148,6 +181,8 @@ class Canvas {
 
         this.drawRightTarget();
         this.drawRightHandLives();
+        this.drawRetreatCounter();
+        game.checkIfLoose();            
 
         if(this.rightHandCoords.x === 296) {
             this.rightHandMoving = true;
@@ -155,38 +190,18 @@ class Canvas {
     }
 
     drawLeftHandLives() {
-        if(this.canvasRotated) {
-            this.ctx.save();
-            this.ctx.translate(this.livesTextPosition.leftHandLives.x + 55, this.livesTextPosition.leftHandLives.y - 50);
-            this.ctx.rotate(-Math.PI);
-            this.ctx.font = "50px Arial";
-            this.ctx.fillStyle = "white";
-            this.ctx.fillText(game.players["Player1"].lives, 0, 0);
-            this.ctx.restore();
-        } else {
-            this.ctx.font = "50px Arial";
-            this.ctx.fillStyle = "white";
-            this.ctx.fillText(game.players["Player1"].lives, this.livesTextPosition.leftHandLives.x, this.livesTextPosition.leftHandLives.y);
-        }
+        this.ctx.font = "50px Arial";
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText(game.players["Player1"].lives, this.livesTextPosition.leftHandLives.x, this.livesTextPosition.leftHandLives.y);
     }
 
     drawRightHandLives() {
-        if(this.canvasRotated) {
-            this.ctx.save();
-            this.ctx.translate(this.livesTextPosition.rightHandLives.x + 70, this.livesTextPosition.rightHandLives.y - 50);
-            this.ctx.rotate(-Math.PI);
-            this.ctx.font = "50px Arial";
-            this.ctx.fillStyle = "white";
-            this.ctx.fillText(game.players["Player2"].lives, 0, 0);
-            this.ctx.restore();
-        } else {
-            this.ctx.font = "50px Arial";
-            this.ctx.fillStyle = "white";
-            this.ctx.fillText(game.players["Player2"].lives, this.livesTextPosition.rightHandLives.x, this.livesTextPosition.rightHandLives.y);
-        }
+        this.ctx.font = "50px Arial";
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText(game.players["Player2"].lives, this.livesTextPosition.rightHandLives.x, this.livesTextPosition.rightHandLives.y);
     }
  
-    stretchLeftHand(rightRetreat) {
+    stretchLeftHand() {
         let i = 0;
         setInterval(() => {
             if(i === 100) return
@@ -194,20 +209,19 @@ class Canvas {
             this.leftObstacleCoords.x += i;
 
             this.clearCanvas();
-            this.drawTemplate();
-            if(rightRetreat) {
-                this.rightHandCoords.x += i
-                this.moveRightHand();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
             } else {
-                this.moveRightHand();
+                this.drawTemplate();
             }
+            this.moveRightHand();
             this.moveLeftHand();
-            this.checkRightCollision()
+            this.checkRightCollision();            
             i += 10
         }, 40)
     }
 
-    stretchRightHand(leftRetreat) {
+    stretchRightHand() {
         let i = 0;
         setInterval(() => {
             if(i === 100) return;
@@ -215,49 +229,63 @@ class Canvas {
             this.rightObstacleCoords.x -= i;
 
             this.clearCanvas();
-            this.drawTemplate();
-
-            if(leftRetreat) {
-                this.leftHandCoords.x -= i;
-                this.moveLeftHand();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
             } else {
-                this.moveLeftHand();
+                this.drawTemplate();
             }
-
+            this.moveLeftHand();
             this.moveRightHand(i);
-            this.checkLeftCollision();
+            this.checkLeftCollision();            
             i += 10
         }, 40)
     }
 
     retreatLeftHand() {
         let i = 0;
+        if(this.rightHandCoords.x === 746) {
+            console.log("right hand not moving")
+            game.retreats--
+            this.checkLeftBracelet();
+        }
         setInterval(() => {
             if(i === 90) return;
             this.leftHandCoords.x -= i;
             this.leftObstacleCoords.x -= i;
 
             this.clearCanvas();
-            this.drawTemplate();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
+            } else {
+                this.drawTemplate();
+            }
             this.moveRightHand();
-            this.moveLeftHand();
-            // this.checkCollision();
+            this.moveLeftHand();                        
             i += 10
         }, 40)
     }
 
     retreatRightHand() {
         let i = 0;
+        if(this.leftHandCoords.x === 620) {
+            console.log("Left hand not moving")
+            game.retreats--
+            // console.log(game.retreats)
+            this.checkRightBracelet();
+        }
         setInterval(() => {
             if(i === 90) return
             this.rightHandCoords.x += i;
             this.rightObstacleCoords.x += i;
 
             this.clearCanvas();
-            this.drawTemplate();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
+            } else {
+                this.drawTemplate();
+            }
             this.moveLeftHand()
-            this.moveRightHand();
-            // this.checkCollision();
+            this.moveRightHand();                        
             i += 10
         }, 40)
     }
@@ -270,10 +298,13 @@ class Canvas {
             this.rightObstacleCoords.x -= i;
 
             this.clearCanvas();
-            this.drawTemplate();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
+            } else {
+                this.drawTemplate();
+            }
             this.moveLeftHand()
-            this.moveRightHand();
-            // this.checkCollision();
+            this.moveRightHand();            
             i -= 10
         }, 40)
     }
@@ -286,10 +317,13 @@ class Canvas {
             this.leftObstacleCoords.x += i;
 
             this.clearCanvas();
-            this.drawTemplate();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
+            } else {
+                this.drawTemplate();
+            }
             this.moveLeftHand()
             this.moveRightHand();
-            // this.checkCollision();
             i -= 10
         }, 40)
     }
@@ -302,10 +336,13 @@ class Canvas {
             this.leftObstacleCoords.x -= i;
 
             this.clearCanvas();
-            this.drawTemplate();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
+            } else {
+                this.drawTemplate();
+            }
             this.moveLeftHand()
-            this.moveRightHand();
-            // this.checkCollision();
+            this.moveRightHand();            
             i -= 10
         }, 40)
     }
@@ -316,13 +353,15 @@ class Canvas {
             if(i === 0) return
             this.rightHandCoords.x += i;
             this.rightObstacleCoords.x += i;
-            // console.log(this.rightHandCoords.x);
 
             this.clearCanvas();
-            this.drawTemplate();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
+            } else {
+                this.drawTemplate();
+            }
             this.moveLeftHand()
-            this.moveRightHand();
-            // this.checkCollision();
+            this.moveRightHand();            
             i -= 10
         }, 40)
     }
@@ -332,43 +371,50 @@ class Canvas {
             // substract lives for left hand
             slapEffect.play()
             game.players["Player1"].lives--
-            return
+            game.retreats = 3;
         } else {
             if(this.rightObstacleCoords.x - 40 > this.leftObstacleCoords.x  && this.rightHandMoving) {
                 console.log("Hey Missed")
-
+                game.retreats = 3;
                 setTimeout(() => {
                     this.canvasRotated = false;
                     this.rotateCanvas();
+                    game.players["Player1"].attack = true;
+                    game.players["Player2"].attack = false;
+                    if(game.players["Player1"].attack) {
+                        this.rotateTemplate()
+                    } else {
+                        this.drawTemplate();
+                    }
+                    
                 }, 500)
                 console.log("left collision");
-
-                game.players["Player1"].attack = true;
-                game.players["Player2"].attack = false;
             }
         }
     }
 
     checkRightCollision() {
         if(this.leftObstacleCoords.x >= this.rightObstacleCoords.x - 40) {
-            // substract lives for right hand
-            // console.log("right collision");
-            // console.log(game.players["Player1"].attack);
             slapEffect.play()
             game.players["Player2"].lives--
-            // return true
+            game.retreats = 3;
         } else {
-            console.log(this.leftHandMoving)
+            // console.log(this.leftHandMoving)
             if(this.leftObstacleCoords.x < this.rightObstacleCoords.x - 40 && this.leftHandMoving) {
                 console.log("Missed")
+                game.retreats = 3;
                 setTimeout(() => {
                     this.canvasRotated = true;
                     this.rotateCanvas();
+                    game.players["Player1"].attack = false;
+                    game.players["Player2"].attack = true;
+                    if(game.players["Player1"].attack) {
+                        this.rotateTemplate()
+                    } else {
+                        this.drawTemplate();
+                    }
                 }, 500)
-                // console.log("Changing player1 attack");
-
-                game.players["Player1"].attack = false;
-                game.players["Player2"].attack = true;
+                
             }
         }
     }
@@ -376,14 +422,18 @@ class Canvas {
     rotateCanvas() {
         this.toggleEvent = false;
         if(this.canvasRotated) {
-            const canvas = $("canvas")
-            canvas.css("transform", "rotate(180deg)")
-            canvas.css("transition", "transform 1000ms ease")
-            this.livesTextPosition.leftHandLives.y = this.canvas.height -10;
-            this.livesTextPosition.rightHandLives.y = this.canvas.height -10;
+            const canvas = $("canvas")  
+            canvas.addClass("rotate")
+            setTimeout(() => {
+                canvas.removeClass("rotate")    
+            }, 1010)
     
             this.clearCanvas();
-            this.drawTemplate();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
+            } else {
+                this.drawTemplate();
+            }
             setTimeout(() => {
                 this.moveLeftHand();
                 this.moveRightHand();
@@ -392,14 +442,18 @@ class Canvas {
                 this.toggleEvent = true;
             }, 1500);
         } else {
-            const canvas = $("canvas")
-            canvas.css("transform", "rotate(0)")
-            canvas.css("transition", "transform 1000ms ease")
-            this.livesTextPosition.leftHandLives.y = 50;
-            this.livesTextPosition.rightHandLives.y = 50;
+            const canvas = $("canvas") 
+            canvas.addClass("rotate")  
+            setTimeout(() => {
+                canvas.removeClass("rotate")    
+            }, 1010)    
         
             this.clearCanvas();
-            this.drawTemplate();
+            if(game.players["Player1"].attack) {
+                this.rotateTemplate()
+            } else {
+                this.drawTemplate();
+            }
             setTimeout(() => {
                 this.moveLeftHand();
                 this.moveRightHand();
@@ -410,5 +464,140 @@ class Canvas {
         }
     }
 
-    // drawAttackText() {}
+    drawLeftSadFace() {
+        this.ctx.save();
+        if(this.canvasRotated) {
+            this.ctx.translate(this.leftHandCoords.x, 600);
+            this.ctx.rotate(-Math.PI)
+            this.ctx.drawImage(sadFace, 0, 0);
+        } else {
+            this.ctx.translate(this.leftHandCoords.x, 160);
+            this.ctx.drawImage(sadFace, 0, 0);
+        }
+
+
+        this.ctx.restore();
+    }
+
+    drawRightSadFace() {
+        this.ctx.save();
+        if(this.canvasRotated) {
+            this.ctx.translate(this.rightHandCoords.x, 160);
+            this.ctx.rotate(-Math.PI)
+            this.ctx.drawImage(sadFace, 0, 0);
+        } else {
+            this.ctx.translate(700, 100);
+            this.ctx.drawImage(sadFace, 0, 0);
+        }
+
+        this.ctx.restore();
+    }
+
+    drawWinnerText() {
+        this.ctx.save();
+        if(this.canvasRotated) {
+            this.ctx.translate(1200, 320);
+            this.ctx.rotate(-Math.PI);
+            this.ctx.font = "80px Arial";
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("WINNER", 0, 0);            
+        } else {
+            this.ctx.font = "80px Arial";
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("WINNER", 170, 350); 
+        }
+        this.ctx.restore();
+    }
+
+    drawAttackText() {
+        if(game.players["Player1"].attack) {
+            this.ctx.font = "50px Arial";
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("Attack", 250, 150);
+            return
+        }
+
+        if(game.players["Player2"].attack) {
+            this.ctx.font = "50px Arial";
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("Attack", 950, 150);
+            return
+        }
+    }
+
+    drawRetreatCounter() {
+        if(!(game.players["Player1"].attack)) {
+            let y = 0;
+            for(let i = 0; i < game.retreats; i++) {
+                this.ctx.save();
+        
+                this.ctx.translate(635, this.leftHandCoords.y - y)
+                this.ctx.beginPath();
+    
+                this.ctx.arc(0, 0, 15, 0, 2 * Math.PI);
+                this.ctx.fillStyle = 'white';
+                this.ctx.fill();
+                this.ctx.stroke();
+    
+                this.ctx.closePath();
+                this.ctx.restore();
+                y += 35
+            } 
+        } else {
+            let y = 0;
+            for(let i = 0; i < game.retreats; i++) {
+                this.ctx.save();
+        
+                this.ctx.translate(725, this.leftHandCoords.y - y)
+                this.ctx.beginPath();
+    
+                this.ctx.arc(0, 0, 15, 0, 2 * Math.PI);
+                this.ctx.fillStyle = 'white';
+                this.ctx.fill();
+                this.ctx.stroke();
+    
+                this.ctx.closePath();
+                this.ctx.restore();
+                y += 35
+            }
+        }
+    }
+
+    checkLeftBracelet() {
+        if(game.retreats === 0) {
+            this.lockLeftHand = true;
+            setTimeout(() => {
+                let i = 0;
+                let interval = setInterval(() => {
+                    if(i === 30) {
+                        game.retreats = 3;
+                        this.moveHands();
+                        this.lockLeftHand = false;
+                        clearInterval(interval);
+                    } 
+                    this.ctx.drawImage(bracelet, 250, 160);
+                    i++
+                }, 60)
+            }, 1000)
+        }
+    }
+
+    checkRightBracelet() {
+        if(game.retreats === 0) {
+            this.lockRightHand = true;
+            setTimeout(() => {
+                let i = 0;
+                let interval = setInterval(() => {
+                    if(i === 30){
+                        game.retreats = 3;
+                        this.moveHands();
+                        this.lockRightHand = false;
+                        clearInterval(interval)
+                    }
+                    this.ctx.drawImage(bracelet, 1000, 160);
+                    i++
+                }, 60)
+            }, 1000)
+        }
+    }
 }
