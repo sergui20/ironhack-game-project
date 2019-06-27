@@ -16,6 +16,7 @@
             <button id="1player" onclick="canvas.render1PlayerScreen()" class="btn players-number">Play with AI</button>
             <button id="2player" onclick="canvas.render2PlayersScreen()" class="btn players-number">2 Player</button>
         </div>
+        <a class="btn controls-button modal-trigger" href="#modal2">How to play?</a>
         <a class="btn add-button modal-trigger" href="#modal1" onclick="removeAddsLoader()">Remove adds for $100</a>
     </div>
 
@@ -45,6 +46,30 @@
         <div class="modal-content">
             <div class="loader"></div>
             <h4 class="h4-loader hide">Thank you</h4>
+        </div>
+    </div>
+
+    <div id="modal2" class="modal">
+        <div class="modal-content controls-modal">
+            <div class="singleplayer-controls">
+                <h4>Singleplayer</h4>
+                <img src="src/images/space-bar.png" width="100px" height="50px">
+            </div>
+
+            <div class="multiplayer-controls">
+                <h4>Multiplayer</h4>
+                <div class="p-controls">
+                    <div class="p1-controls">
+                        <h5>Player 1</h5>
+                        <img src="src/images/a-key.png" width="50px" height="50px">
+                    </div>
+    
+                    <div class="p2-controls">
+                        <h5>Player 2</h5>     
+                        <img src="src/images/l-key.png" width="50px" height="50px">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     

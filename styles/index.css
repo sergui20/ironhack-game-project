@@ -29,9 +29,9 @@ img {
 
 div.start-game {
     width: 400px;
-    height: 325px;
+    height: 340px;
     position: absolute;
-    top: 35%;
+    top: 32%;
     margin-top: -71px;
     left: 50%;
     margin-left: -200px;
@@ -60,9 +60,18 @@ div.buttons-container {
     background-color: #41f473;
 }
 
+.controls-button:hover {
+    background-color: #82b1ff !important;
+}
+
 .add-button {
     background-color: #f4c741;
     padding: 15px 10px;
+}
+
+.controls-button {
+    padding: 17px 10px !important;
+    background-color: #0d47a1;
 }
 
 .add-button:hover {
@@ -132,6 +141,36 @@ div.rematch {
 
 .btn-rematch {
     padding: 25px  !important;
+}
+
+div.controls-modal {
+    display: flex;
+    justify-content: space-between;
+}
+
+.singleplayer-controls {
+    text-align: center;
+}
+
+.multiplayer-controls {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    align-items: center;
+}
+
+.p1-controls {
+    text-align: center;
+}
+
+.p2-controls {
+    text-align: center;
+}
+
+.p-controls {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
 }
 
 .loader,
